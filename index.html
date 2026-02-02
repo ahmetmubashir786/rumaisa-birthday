@@ -21,7 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.8s ease;
+    transition: opacity 0.8s ease;
   }
 
   .hidden {
@@ -54,13 +54,31 @@
   .pink { background: #e91e63; color: white; }
 
   #noBtn {
-    position: absolute;
     background: #ccc;
+    position: relative;
   }
 
   .laugh {
     position: absolute;
     font-size: 22px;
+    animation: fade 0.8s forwards;
+  }
+
+  @keyframes fade {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateY(-20px); }
+  }
+
+  .heart {
+    position: absolute;
+    color: #ff4d6d;
+    font-size: 18px;
+    animation: float 4s linear forwards;
+  }
+
+  @keyframes float {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-120px); opacity: 0; }
   }
 </style>
 </head>
@@ -78,11 +96,11 @@
 
 <!-- SLIDE 2 -->
 <div class="slide hidden" id="slide2">
-  <div class="card">
+  <div class="card" id="questionCard">
     <h1>💝 Question</h1>
     <p>Did you like the surprise?</p>
     <button class="pink" onclick="yesClicked()">Yes 😍</button>
-    <button id="noBtn" onmouseover="runAway()">No 🙄</button>
+    <button id="noBtn" onclick="noClicked()">No 🙄</button>
   </div>
 </div>
 
@@ -103,7 +121,7 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-/* YouTube API */
+/* YouTube */
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);
@@ -119,49 +137,61 @@ function onYouTubeIframeAPIReady() {
 }
 
 /* Hearts */
-function hearts() {
+function startHearts() {
   setInterval(() => {
-    confetti({
-      particleCount: 5,
-      shapes: ['heart'],
-      colors: ['#ff4d6d', '#ff85a2'],
-      origin: { x: Math.random(), y: 1 }
-    });
-  }, 400);
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.bottom = "0px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 4000);
+  }, 500);
 }
 
+/* Logic */
+let noCount = 0;
+
 function openSurprise() {
-  document.getElementById('slide1').classList.add('hidden');
-  document.getElementById('slide2').classList.remove('hidden');
+  slide1.classList.add("hidden");
+  slide2.classList.remove("hidden");
 
   if (player) player.playVideo();
 
   confetti({ particleCount: 200, spread: 140 });
-  hearts();
+  startHearts();
 }
 
-function runAway() {
-  const no = document.getElementById('noBtn');
-  const x = Math.random() * (window.innerWidth - 120);
-  const y = Math.random() * (window.innerHeight - 120);
-  no.style.left = x + "px";
-  no.style.top = y + "px";
+function noClicked() {
+  noCount++;
+
+  const card = document.getElementById("questionCard");
+  const noBtn = document.getElementById("noBtn");
+
+  const maxX = card.clientWidth - noBtn.offsetWidth - 20;
+  const maxY = card.clientHeight - noBtn.offsetHeight - 20;
+
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
 
   const laugh = document.createElement("div");
   laugh.className = "laugh";
-  laugh.innerText = "😂😂😂";
-  laugh.style.left = x + "px";
-  laugh.style.top = y + "px";
-  document.body.appendChild(laugh);
-
+  laugh.innerText = "😂😂";
+  laugh.style.left = noBtn.offsetLeft + "px";
+  laugh.style.top = noBtn.offsetTop + "px";
+  card.appendChild(laugh);
   setTimeout(() => laugh.remove(), 800);
+
+  if (noCount >= 3) {
+    noBtn.style.display = "none";
+  }
 }
 
 function yesClicked() {
-  document.getElementById('slide2').classList.add('hidden');
-  document.getElementById('slide3').classList.remove('hidden');
+  slide2.classList.add("hidden");
+  slide3.classList.remove("hidden");
 
-  confetti({ particleCount: 300, spread: 160 });
+  confetti({ particleCount: 350, spread: 160 });
 }
 </script>
 
