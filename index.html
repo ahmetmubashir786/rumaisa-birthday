@@ -25,6 +25,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     width: 90%;
     max-width: 360px;
+    position: relative;
   }
 
   h1 {
@@ -32,13 +33,33 @@
   }
 
   button {
-    padding: 14px 28px;
-    font-size: 18px;
+    padding: 12px 25px;
+    font-size: 16px;
     border: none;
     border-radius: 25px;
+    cursor: pointer;
+    margin: 10px;
+  }
+
+  #openBtn {
     background: #e91e63;
     color: white;
-    cursor: pointer;
+    font-size: 18px;
+  }
+
+  #yesBtn {
+    background: #e91e63;
+    color: white;
+  }
+
+  #noBtn {
+    background: #ccc;
+    color: black;
+    position: absolute;
+  }
+
+  .question {
+    display: none;
     margin-top: 20px;
   }
 </style>
@@ -49,7 +70,14 @@
 <div class="card">
   <h1>🎉 Happy Birthday Rumaisa 🎂</h1>
   <p>A small surprise for you 💖</p>
-  <button onclick="startSurprise()">🎁 Open Surprise</button>
+
+  <button id="openBtn" onclick="startSurprise()">🎁 Open Surprise</button>
+
+  <div class="question" id="questionBox">
+    <p>Did you like the surprise? 💝</p>
+    <button id="yesBtn" onclick="yesClicked()">Yes 😍</button>
+    <button id="noBtn" onmouseover="moveNo()">No 🙄</button>
+  </div>
 </div>
 
 <!-- Hidden YouTube Player -->
@@ -58,7 +86,7 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-  // Load YouTube API
+  // Load YouTube IFrame API
   var tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -70,7 +98,7 @@
     player = new YT.Player('player', {
       height: '0',
       width: '0',
-      videoId: 'bOhnrdVLUnM', // your romantic song
+      videoId: 'bOhnrdVLUnM', // your song
       playerVars: {
         autoplay: 0,
         controls: 0,
@@ -90,6 +118,25 @@
       spread: 160,
       origin: { y: 0.6 }
     });
+
+    document.getElementById("questionBox").style.display = "block";
+  }
+
+  function yesClicked() {
+    confetti({
+      particleCount: 400,
+      spread: 180
+    });
+
+    alert("I know you liked it 🥳🎁🎁🎁");
+  }
+
+  function moveNo() {
+    const noBtn = document.getElementById("noBtn");
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
   }
 </script>
 
